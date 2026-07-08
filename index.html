@@ -52,6 +52,10 @@
     .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .nav-links a { font-size: 13px; color: var(--ink-secondary); text-decoration: none; }
     .nav-links a:hover { color: var(--ink-primary); }
+    .lang-switch { display: flex; gap: 8px; }
+    .lang-switch a { font-size: 12px; color: var(--ink-secondary); text-decoration: none; padding: 3px 8px; border: 1px solid var(--grid); border-radius: 12px; }
+    .lang-switch a:hover { background: var(--accent-light); color: var(--accent-dark); border-color: var(--accent-light); }
+    .lang-switch a.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
     /* HERO */
     .hero {
@@ -269,7 +273,13 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-logo">Japan<span>SIM</span>Guide</a>
+    <a href="/japan-sim-guide/" class="nav-logo">Japan<span>SIM</span>Guide</a>
+    <div class="lang-switch">
+      <a href="/japan-sim-guide/" class="active">EN</a>
+      <a href="/japan-sim-guide/ko/">한국어</a>
+      <a href="/japan-sim-guide/pt/">PT</a>
+      <a href="/japan-sim-guide/th/">ไทย</a>
+    </div>
     <div class="nav-links">
       <a href="#compare">Compare</a>
       <a href="#simulator">Calculator</a>
