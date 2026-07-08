@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tetsu363636.github.io/japan-sim-guide/sitemap.xml
