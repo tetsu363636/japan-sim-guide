@@ -1,0 +1,114 @@
+.entry-path {
+  max-width: 980px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+}
+
+.entry-path-card {
+  background: linear-gradient(180deg, rgba(42, 120, 214, 0.08), rgba(255, 255, 255, 0.96));
+  border: 1px solid var(--accent-light, #cde2fb);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(11, 11, 11, 0.06);
+  padding: 22px;
+}
+
+.entry-path-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-dark, #1c5cab);
+  margin-bottom: 10px;
+}
+
+.entry-path-title {
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.3;
+  margin: 0 0 10px;
+  color: var(--ink-primary, #0b0b0b);
+}
+
+.entry-path-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--ink-secondary, #52514e);
+  margin: 0;
+}
+
+.entry-path-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.entry-path-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--grid, #e1e0d9);
+  color: var(--ink-primary, #0b0b0b);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.entry-path-step:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent, #2a78d6);
+  box-shadow: 0 10px 24px rgba(42, 120, 214, 0.12);
+  text-decoration: none;
+}
+
+.entry-path-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--accent, #2a78d6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.entry-path-step-text {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.entry-path-note {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-secondary, #52514e);
+}
+
+.entry-cta-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.72) !important;
+  margin-bottom: 10px !important;
+}
+
+@media (max-width: 640px) {
+  .entry-path {
+    padding: 0 16px;
+  }
+
+  .entry-path-card {
+    padding: 18px;
+  }
+
+  .entry-path-step {
+    padding: 13px 14px;
+  }
+}

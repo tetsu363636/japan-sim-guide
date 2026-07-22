@@ -1,0 +1,29 @@
+Post option 1
+Moving to Japan and stuck on the SIM question?
+
+I built a guide focused on the parts newcomers actually struggle with:
+- no Japanese credit card yet
+- eSIM on arrival
+- English signup flow
+- docomo / au / SoftBank price gap
+
+Guide: https://tetsu363636.github.io/japan-sim-guide/?src=threads
+
+Post option 2
+I kept seeing the same question from people moving to Japan: "Which SIM is easiest for foreigners?"
+
+So I turned my answer into a public guide with:
+- price comparison vs Japan's Big 3
+- interactive cost calculator
+- foreigner signup checklist
+- 11 languages
+
+https://tetsu363636.github.io/japan-sim-guide/?src=threads
+
+Post option 3
+Disclosure: I work at Rakuten, and the guide below includes an official employee referral link.
+
+I added a separate methodology page so the incentive is not hidden and readers can judge the comparison for themselves:
+
+Guide: https://tetsu363636.github.io/japan-sim-guide/?src=threads
+Methodology: https://tetsu363636.github.io/japan-sim-guide/methodology/?src=threads

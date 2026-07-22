@@ -4,7 +4,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -23,7 +23,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/ko/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -42,7 +42,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/zh/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -61,7 +61,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/zh-TW/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -80,7 +80,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/vi/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -99,7 +99,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/tl/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -118,7 +118,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/es/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -137,7 +137,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/id/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -156,7 +156,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/ne/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -175,7 +175,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/pt/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -194,7 +194,7 @@
 
   <url>
     <loc>https://tetsu363636.github.io/japan-sim-guide/th/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"    href="https://tetsu363636.github.io/japan-sim-guide/"/>
@@ -209,6 +209,13 @@
     <xhtml:link rel="alternate" hreflang="pt"    href="https://tetsu363636.github.io/japan-sim-guide/pt/"/>
     <xhtml:link rel="alternate" hreflang="th"    href="https://tetsu363636.github.io/japan-sim-guide/th/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tetsu363636.github.io/japan-sim-guide/"/>
+  </url>
+
+  <url>
+    <loc>https://tetsu363636.github.io/japan-sim-guide/methodology/</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
 </urlset>

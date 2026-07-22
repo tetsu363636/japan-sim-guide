@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology, Editorial Notes, and Disclosure | JapanSIMGuide</title>
+  <meta name="description" content="How JapanSIMGuide compares mobile plans in Japan for foreigners, what gets updated, how disclosure works, and what the guide does not claim.">
+  <meta property="og:title" content="Methodology, Editorial Notes, and Disclosure | JapanSIMGuide">
+  <meta property="og:description" content="Pricing logic, foreigner-specific evaluation criteria, update policy, and disclosure notes for JapanSIMGuide.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JapanSIMGuide">
+  <meta property="og:url" content="https://tetsu363636.github.io/japan-sim-guide/methodology/">
+  <meta property="og:image" content="https://tetsu363636.github.io/japan-sim-guide/assets/social-card.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JapanSIMGuide preview card">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Methodology, Editorial Notes, and Disclosure | JapanSIMGuide">
+  <meta name="twitter:description" content="How this guide is maintained, what gets checked, and where the author has a conflict to disclose.">
+  <meta name="twitter:image" content="https://tetsu363636.github.io/japan-sim-guide/assets/social-card.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2a78d6">
+  <link rel="icon" type="image/svg+xml" href="/japan-sim-guide/assets/favicon.svg">
+  <link rel="canonical" href="https://tetsu363636.github.io/japan-sim-guide/methodology/">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "Methodology, Editorial Notes, and Disclosure",
+    "url": "https://tetsu363636.github.io/japan-sim-guide/methodology/",
+    "inLanguage": "en",
+    "description": "Explains how JapanSIMGuide compares mobile plans for foreigners in Japan, how the page is updated, and where the author has incentives to disclose.",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "JapanSIMGuide",
+      "url": "https://tetsu363636.github.io/japan-sim-guide/"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Rakuten Group Employee"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --surface: #fcfcfb;
+      --page: #f4f3f0;
+      --ink-primary: #0b0b0b;
+      --ink-secondary: #52514e;
+      --ink-muted: #898781;
+      --grid: #e1e0d9;
+      --accent: #2a78d6;
+      --accent-light: #cde2fb;
+      --accent-dark: #1c5cab;
+      --good: #006300;
+      --good-bg: #d4f0d4;
+      --warn: #7a4f00;
+      --warn-bg: #fef3cd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--page);
+      color: var(--ink-primary);
+      line-height: 1.7;
+    }
+    a { color: var(--accent-dark); }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--grid);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .nav-logo {
+      font-weight: 800;
+      color: var(--ink-primary);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+    .nav-links a {
+      color: var(--ink-secondary);
+      text-decoration: none;
+    }
+    .nav-links a:hover { color: var(--ink-primary); }
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--grid);
+      padding: 72px 24px 56px;
+    }
+    .hero-inner, .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1.1;
+      max-width: 720px;
+      margin-bottom: 18px;
+    }
+    .hero p {
+      max-width: 680px;
+      color: var(--ink-secondary);
+      font-size: 18px;
+    }
+    .hero-note {
+      margin-top: 20px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .container {
+      padding: 44px 24px 72px;
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--grid);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    p + p { margin-top: 12px; }
+    ul {
+      margin-top: 12px;
+      padding-left: 18px;
+      color: var(--ink-secondary);
+    }
+    li + li { margin-top: 8px; }
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eef5ff;
+    }
+    .warn {
+      border-left-color: #f0b429;
+      background: var(--warn-bg);
+    }
+    .muted {
+      color: var(--ink-secondary);
+    }
+    footer {
+      border-top: 1px solid var(--grid);
+      padding: 28px 24px 40px;
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/japan-sim-guide/" class="nav-logo">Japan<span>SIM</span>Guide</a>
+      <div class="nav-links">
+        <a href="/japan-sim-guide/">Main guide</a>
+        <a href="#comparison">Comparison rules</a>
+        <a href="#updates">Update policy</a>
+        <a href="#disclosure">Disclosure</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Trust notes</div>
+      <h1>Methodology, editorial notes, and disclosure</h1>
+      <p>This page explains how JapanSIMGuide is maintained, what gets compared, which newcomer-specific criteria matter most, and where the author has incentives that should be obvious to readers.</p>
+      <div class="hero-note">Last updated July 16, 2026</div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="card callout">
+      <h2>Why this page exists</h2>
+      <p>JapanSIMGuide makes a strong recommendation, includes an employee referral link, and compares plans that change over time. That creates a responsibility to explain the decision rules behind the guide, not just the conclusion.</p>
+      <p class="muted">If you are evaluating whether to trust the main guide, this page is the short answer to "How did you decide that?"</p>
+    </section>
+
+    <section class="grid">
+      <div class="card" id="comparison">
+        <h2>How plans are compared</h2>
+        <ul>
+          <li>Prices are normalized to tax-included monthly cost wherever possible.</li>
+          <li>Comparison tables prioritize common newcomer decision points: around 3GB, around 20GB, and unlimited usage.</li>
+          <li>Features only matter if they change the real signup experience: eSIM availability, card acceptance, English support, and whether a store visit is likely.</li>
+          <li>When a carrier offers many discount combinations, the guide favors the simplest publicly visible comparison instead of an optimistic stack that many newcomers cannot use on day one.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Foreigner-specific criteria</h2>
+        <ul>
+          <li>Can someone sign up without a Japanese credit card yet?</li>
+          <li>Is a Japanese-language-only support flow likely to block the user?</li>
+          <li>Can the SIM be activated quickly after arrival, especially by eSIM?</li>
+          <li>Do identity documents commonly held by mid- or long-stay residents work in the standard application flow?</li>
+          <li>Would a tourist visa user need a different category entirely, such as prepaid or visitor eSIM?</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card" id="updates">
+        <h2>What gets updated</h2>
+        <ul>
+          <li>Headline pricing and data-tier comparison tables.</li>
+          <li>Referral bonus copy, because campaign terms can move.</li>
+          <li>Signup requirements and FAQ items that affect new residents directly.</li>
+          <li>Coverage and speed commentary when the guide needs clearer caveats.</li>
+          <li>Language navigation, hreflang, and structured data so every language page remains discoverable and internally consistent.</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <h2>Important limits</h2>
+        <ul>
+          <li>This guide is not an official Rakuten page and is not endorsed by Rakuten Group, Inc.</li>
+          <li>Carrier pricing, campaign bonuses, and signup rules can change after publication.</li>
+          <li>Coverage summaries are directional and should not replace checking a specific address before signup.</li>
+          <li>No single plan is best for every user; rural-heavy use and ultra-low-data use cases can point elsewhere.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Source categories reviewed for each refresh</h2>
+      <div class="grid">
+        <div>
+          <p><strong>Carrier materials</strong></p>
+          <p class="muted">Plan pages, pricing pages, campaign notes, signup requirement pages, and coverage-map references for the carriers discussed in the guide.</p>
+        </div>
+        <div>
+          <p><strong>Product-experience notes</strong></p>
+          <p class="muted">The guide also reflects the author's personal signup and usage experience, especially where official copy does not explain newcomer friction very well.</p>
+        </div>
+        <div>
+          <p><strong>Site maintenance checks</strong></p>
+          <p class="muted">Canonical URLs, hreflang links, structured data, social preview assets, and multilingual navigation are reviewed because these affect discovery and sharing, not just reader experience.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="disclosure">
+      <h2>Disclosure</h2>
+      <p>The author works at Rakuten Group and the main guide contains an official employee referral link for Rakuten Mobile. The author receives an internal incentive when someone signs up through that link.</p>
+      <p>Because of that conflict, the guide intentionally includes sections about who should not use Rakuten Mobile, where rural coverage can still be weaker, and why very low-usage users may prefer another option. The goal is not to hide the incentive; it is to make it explicit and then give readers enough information to judge the recommendation anyway.</p>
+    </section>
+
+    <section class="card">
+      <h2>If something looks outdated</h2>
+      <p>The safest rule is still the simplest one: verify the current pricing and eligibility details on each carrier's official site before you apply. The guide is designed to narrow the decision quickly, not replace the final source of truth.</p>
+      <p><a href="/japan-sim-guide/">Return to the main guide and calculator</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    JapanSIMGuide editorial notes page. Main guide: <a href="/japan-sim-guide/">tetsu363636.github.io/japan-sim-guide</a>.
+  </footer>
+</body>
+</html>
