@@ -310,10 +310,15 @@
     }
   };
 
+  var SOURCE_LABELS = {
+    bluesky: "Bluesky"
+  };
+
   var SOURCE_FLOW = {
     reddit: ["faq", "requirements", "compare"],
     quora: ["requirements", "faq", "compare"],
     threads: ["compare", "simulator", "apply"],
+    bluesky: ["compare", "requirements", "apply"],
     article: ["compare", "howto", "apply"],
     search: ["compare", "simulator", "requirements"],
     direct: ["compare", "requirements", "apply"]
@@ -435,6 +440,9 @@
     if (value.indexOf("thread") !== -1) {
       return { category: "threads", labelKey: "threads", persist: "threads" };
     }
+    if (value.indexOf("bluesky") !== -1 || value.indexOf("bsky") !== -1) {
+      return { category: "bluesky", labelKey: "bluesky", persist: "bluesky" };
+    }
     if (
       value.indexOf("google") !== -1 ||
       value.indexOf("bing") !== -1 ||
@@ -463,6 +471,9 @@
     }
     if (hostname.indexOf("threads.net") !== -1) {
       return { category: "threads", labelKey: "threads", persist: "threads" };
+    }
+    if (hostname.indexOf("bsky.app") !== -1 || hostname.indexOf("bsky.social") !== -1) {
+      return { category: "bluesky", labelKey: "bluesky", persist: "bluesky" };
     }
     if (
       hostname.indexOf("google.") !== -1 ||
@@ -534,7 +545,7 @@
       return;
     }
 
-    var sourceName = copy.sources[source.labelKey] || copy.sources.article;
+    var sourceName = copy.sources[source.labelKey] || SOURCE_LABELS[source.labelKey] || copy.sources.article;
     var title = source.category === "direct"
       ? copy.defaultTitle
       : copy.fromSource.replace("{source}", sourceName);

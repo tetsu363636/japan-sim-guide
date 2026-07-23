@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+import publish_bluesky
 import publish_devto
 import publish_hashnode
 import publish_threads
@@ -73,6 +74,13 @@ def language_hint(landing_language: str) -> str:
     return f"This link opens the {label} version by default.\n\n"
 
 
+def short_language_hint(landing_language: str) -> str:
+    if landing_language == "en":
+        return ""
+    label = LANGUAGE_LABELS.get(landing_language, landing_language)
+    return f"{label} version opens by default."
+
+
 def angle_summary(campaign: dict[str, Any], angle_id: str) -> dict[str, Any]:
     return require_key(campaign["angles"], angle_id, "angle")
 
@@ -123,6 +131,51 @@ def threads_text(campaign: dict[str, Any], angle_id: str, landing_language: str)
     if len(text) > max_length:
         raise SystemExit(f"Threads post for angle {angle_id!r} still exceeds {max_length} characters.")
     return text
+
+
+def bluesky_text(campaign: dict[str, Any], angle_id: str, landing_language: str) -> str:
+    max_length = require_key(campaign["platforms"], "bluesky", "platform").get("max_length", 300)
+    disclosure = "I work at Rakuten; the guide clearly labels the referral link."
+    hints = [short_language_hint(landing_language)] if landing_language != "en" else []
+
+    hooks = {
+        "arrival-friction": "Most Japan SIM advice assumes you're already settled.",
+        "honest-comparison": "Most Japan SIM posts hide the real tradeoffs for foreigners.",
+        "multilingual-helper": "Japan SIM advice gets messy fast when someone has to translate it.",
+    }
+    focus_lines = {
+        "arrival-friction": "I built a guide for week-one issues: eSIM on arrival, no Japanese credit card yet, and document friction.",
+        "honest-comparison": "I compared Rakuten vs docomo / au / SoftBank on real monthly cost, signup friction, and when Rakuten is not the best fit.",
+        "multilingual-helper": "It keeps the same comparison, checklist, and calculator across 11 languages for newcomers and the people helping them.",
+    }
+    require_key(hooks, angle_id, "angle")
+    require_key(focus_lines, angle_id, "angle")
+
+    def compose(include_hint: bool) -> str:
+        parts = [
+            disclosure,
+            hooks[angle_id],
+            focus_lines[angle_id],
+        ]
+        if include_hint and hints:
+            parts.append(hints[0])
+        return "\n\n".join(parts).strip()
+
+    text = compose(include_hint=True)
+    if len(text) > max_length:
+        text = compose(include_hint=False)
+    if len(text) > max_length:
+        raise SystemExit(f"Bluesky post for angle {angle_id!r} still exceeds {max_length} characters.")
+    return text
+
+
+def bluesky_card(campaign: dict[str, Any], landing_language: str) -> dict[str, str]:
+    card = require_key(campaign.get("link_cards", {}), "bluesky", "link card")
+    return {
+        "url": landing_url(campaign, "bluesky", landing_language),
+        "title": card["title"],
+        "description": card["description"],
+    }
 
 
 def reddit_title(campaign: dict[str, Any], angle_id: str) -> str:
@@ -233,11 +286,19 @@ def threads_render(campaign: dict[str, Any], angle_id: str, landing_language: st
     return threads_text(campaign, angle_id, landing_language)
 
 
+def bluesky_render(campaign: dict[str, Any], angle_id: str, landing_language: str) -> str:
+    return bluesky_text(campaign, angle_id, landing_language)
+
+
 def render_content(campaign: dict[str, Any], platform: str, angle_id: str | None, landing_language: str) -> str:
     if platform == "threads":
         if not angle_id:
             raise SystemExit("--angle is required for threads.")
         return threads_render(campaign, angle_id, landing_language)
+    if platform == "bluesky":
+        if not angle_id:
+            raise SystemExit("--angle is required for bluesky.")
+        return bluesky_render(campaign, angle_id, landing_language)
     if platform == "reddit":
         if not angle_id:
             raise SystemExit("--angle is required for reddit.")
@@ -250,7 +311,7 @@ def render_content(campaign: dict[str, Any], platform: str, angle_id: str | None
 
 
 def filename_for(platform: str, angle_id: str, landing_language: str) -> str:
-    extension = "txt" if platform == "threads" else "md"
+    extension = "txt" if platform in {"threads", "bluesky"} else "md"
     return f"{platform}-{landing_language}-{angle_id}.{extension}"
 
 
@@ -258,7 +319,7 @@ def planned_filename(task: dict[str, Any]) -> str:
     platform = task["platform"]
     landing_language = task.get("landing_language", "en")
     angle_id = task.get("angle")
-    if platform in {"reddit", "quora", "threads"} and angle_id:
+    if platform in {"reddit", "quora", "threads", "bluesky"} and angle_id:
         return filename_for(platform, angle_id, landing_language)
     if platform == "devto":
         return f"devto-{landing_language}-draft.json"
@@ -273,7 +334,7 @@ def task_command(task: dict[str, Any], output_dir: str | None = None) -> str:
     angle_id = task.get("angle")
     target_arg = f" --output-dir {output_dir}" if output_dir and platform in {"reddit", "quora"} else ""
     output_arg = ""
-    if output_dir and platform in {"threads", "devto", "hashnode"}:
+    if output_dir and platform in {"threads", "bluesky", "devto", "hashnode"}:
         output_arg = f" --output {Path(output_dir) / planned_filename(task)}"
 
     if platform in {"reddit", "quora"}:
@@ -285,6 +346,12 @@ def task_command(task: dict[str, Any], output_dir: str | None = None) -> str:
         return (
             "THREADS_ACCESS_TOKEN=... "
             f"python3 scripts/outreach_campaign.py dispatch --platform threads "
+            f"--angle {angle_id} --landing-language {landing_language}{output_arg}"
+        )
+    if platform == "bluesky":
+        return (
+            "BLUESKY_HANDLE=... BLUESKY_APP_PASSWORD=... "
+            f"python3 scripts/outreach_campaign.py dispatch --platform bluesky "
             f"--angle {angle_id} --landing-language {landing_language}{output_arg}"
         )
     if platform == "devto":
@@ -318,6 +385,7 @@ def validate_campaign(campaign: dict[str, Any]) -> dict[str, Any]:
     results: dict[str, Any] = {
         "campaign": campaign["id"],
         "threads_checks": [],
+        "bluesky_checks": [],
         "playbook_checks": [],
         "status": "ok",
     }
@@ -333,12 +401,21 @@ def validate_campaign(campaign: dict[str, Any]) -> dict[str, Any]:
                     "status": "ok",
                 }
             )
+            bluesky = bluesky_text(campaign, angle_id, landing_language)
+            results["bluesky_checks"].append(
+                {
+                    "angle": angle_id,
+                    "landing_language": landing_language,
+                    "length": publish_bluesky.count_text_length(bluesky),
+                    "status": "ok",
+                }
+            )
 
     for playbook_name, definition in campaign.get("playbooks", {}).items():
         for idx, task in enumerate(definition.get("tasks", []), start=1):
             platform = require_key(campaign["platforms"], task["platform"], "platform")
             landing_language = normalize_language(campaign, task.get("landing_language", "en"))
-            if task["platform"] in {"threads", "reddit", "quora"}:
+            if task["platform"] in {"threads", "bluesky", "reddit", "quora"}:
                 angle_id = task.get("angle")
                 if not angle_id:
                     raise SystemExit(f"Playbook {playbook_name} task {idx} is missing an angle.")
@@ -370,7 +447,7 @@ def export_bundle(
 
     for platform in platforms:
         mode = platform_mode(campaign, platform)
-        if platform in {"threads", "reddit", "quora"}:
+        if platform in {"threads", "bluesky", "reddit", "quora"}:
             for angle_id in angles:
                 content = render_content(campaign, platform, angle_id, landing_language)
                 path = output_dir / filename_for(platform, angle_id, landing_language)
@@ -465,6 +542,20 @@ def prepare_playbook_assets(campaign: dict[str, Any], playbook_name: str, output
                 ),
             )
             output_path.write_text(content + "\n", encoding="utf-8")
+        elif platform == "bluesky":
+            content = publish_bluesky_dispatch(
+                campaign,
+                SimpleNamespace(
+                    angle=angle_id,
+                    landing_language=landing_language,
+                    dry_run=True,
+                    identifier=None,
+                    app_password=None,
+                    service=None,
+                    pds_host=None,
+                ),
+            )
+            output_path.write_text(content + "\n", encoding="utf-8")
         elif platform == "devto":
             content = publish_devto_dispatch(
                 campaign,
@@ -547,6 +638,72 @@ def publish_threads_dispatch(campaign: dict[str, Any], args: argparse.Namespace)
     post_id = published.get("id")
     if post_id:
         payload["details"] = publish_threads.lookup_post(access_token, str(post_id), publish_threads.DEFAULT_LOOKUP_FIELDS)
+    return dump_json(payload)
+
+
+def publish_bluesky_dispatch(campaign: dict[str, Any], args: argparse.Namespace) -> str:
+    text = bluesky_text(campaign, args.angle, args.landing_language)
+    max_length = require_key(campaign["platforms"], "bluesky", "platform").get("max_length", publish_bluesky.DEFAULT_MAX_LENGTH)
+    card = bluesky_card(campaign, args.landing_language)
+    record = publish_bluesky.build_post_record(
+        text,
+        langs=["en"],
+        add_link_facets=True,
+        external_url=card["url"],
+        external_title=card["title"],
+        external_description=card["description"],
+    )
+
+    service = (args.service or os.environ.get("BLUESKY_SERVICE") or publish_bluesky.DEFAULT_SERVICE).rstrip("/")
+    pds_host = args.pds_host or os.environ.get("BLUESKY_PDS_HOST")
+
+    if args.dry_run:
+        return publish_bluesky.render_dry_run(
+            text=text,
+            text_source={"type": "campaign", "angle": args.angle, "landing_language": args.landing_language},
+            record=record,
+            identifier=args.identifier or os.environ.get("BLUESKY_HANDLE"),
+            service=service,
+            pds_host=pds_host,
+            max_length=max_length,
+        )
+
+    identifier = args.identifier or os.environ.get("BLUESKY_HANDLE")
+    app_password = args.app_password or os.environ.get("BLUESKY_APP_PASSWORD")
+    if not identifier:
+        raise SystemExit("Missing Bluesky identifier. Set BLUESKY_HANDLE or pass --identifier.")
+    if not app_password:
+        raise SystemExit("Missing Bluesky App Password. Set BLUESKY_APP_PASSWORD or pass --app-password.")
+
+    session = publish_bluesky.create_session(identifier, app_password, service=service)
+    resolved_pds = publish_bluesky.resolve_pds_host(session, service=service, explicit_pds_host=pds_host)
+    created = publish_bluesky.create_post(
+        access_token=str(session["accessJwt"]),
+        pds_host=resolved_pds,
+        repo=str(session.get("did") or identifier),
+        record=record,
+    )
+
+    payload: dict[str, Any] = {
+        "platform": "bluesky",
+        "angle": args.angle,
+        "landing_language": args.landing_language,
+        "text": text,
+        "text_length": publish_bluesky.count_text_length(text),
+        "record": record,
+        "session": {
+            "handle": session.get("handle"),
+            "did": session.get("did"),
+            "pds_host": resolved_pds,
+        },
+        "created": created,
+    }
+    public_url = publish_bluesky.public_post_url(
+        str(session.get("handle") or session.get("did") or ""),
+        str(created.get("uri") or ""),
+    )
+    if public_url:
+        payload["public_url"] = public_url
     return dump_json(payload)
 
 
@@ -652,18 +809,18 @@ def parse_args() -> argparse.Namespace:
     list_parser = subparsers.add_parser("list", help="Show platforms, angles, and landing languages.")
     list_parser.add_argument("--output", help="Optional file path for the rendered output.")
 
-    validate_parser = subparsers.add_parser("validate", help="Validate all Threads variants and playbook references.")
+    validate_parser = subparsers.add_parser("validate", help="Validate all Threads and Bluesky variants plus playbook references.")
     validate_parser.add_argument("--output", help="Optional file path for the rendered JSON.")
 
     render_parser = subparsers.add_parser("render", help="Render one platform-specific asset.")
-    render_parser.add_argument("--platform", required=True, choices=["threads", "reddit", "quora"])
+    render_parser.add_argument("--platform", required=True, choices=["threads", "bluesky", "reddit", "quora"])
     render_parser.add_argument("--angle", required=True)
     render_parser.add_argument("--landing-language", default="en")
     render_parser.add_argument("--output", help="Optional file path for the rendered asset.")
 
     bundle_parser = subparsers.add_parser("bundle", help="Render a batch of platform assets into a directory.")
     bundle_parser.add_argument("--landing-language", default="en")
-    bundle_parser.add_argument("--platforms", default="threads,reddit,quora,devto,hashnode", help="Comma-separated platform list.")
+    bundle_parser.add_argument("--platforms", default="threads,bluesky,reddit,quora,devto,hashnode", help="Comma-separated platform list.")
     bundle_parser.add_argument("--angles", default="all", help="Comma-separated angles or 'all'.")
     bundle_parser.add_argument("--output-dir", required=True, help="Directory for rendered assets.")
     bundle_parser.add_argument("--output", help="Optional file path for the manifest JSON.")
@@ -674,14 +831,18 @@ def parse_args() -> argparse.Namespace:
     playbook_parser.add_argument("--output", help="Optional file path for the rendered output or manifest JSON.")
 
     dispatch_parser = subparsers.add_parser("dispatch", help="Publish to an API-backed platform or export a manual draft.")
-    dispatch_parser.add_argument("--platform", required=True, choices=["threads", "reddit", "quora", "devto", "hashnode"])
-    dispatch_parser.add_argument("--angle", help="Required for threads/reddit/quora.")
+    dispatch_parser.add_argument("--platform", required=True, choices=["threads", "bluesky", "reddit", "quora", "devto", "hashnode"])
+    dispatch_parser.add_argument("--angle", help="Required for threads/bluesky/reddit/quora.")
     dispatch_parser.add_argument("--landing-language", default="en")
     dispatch_parser.add_argument("--output", help="Optional file path for the rendered output.")
     dispatch_parser.add_argument("--output-dir", help="Directory used when exporting a manual draft.")
     dispatch_parser.add_argument("--dry-run", action="store_true", help="Render payloads without sending them.")
     dispatch_parser.add_argument("--publish", action="store_true", help="Publish immediately on dev.to or Hashnode instead of creating a draft.")
     dispatch_parser.add_argument("--access-token", help="Threads access token override.")
+    dispatch_parser.add_argument("--identifier", help="Bluesky handle or DID override.")
+    dispatch_parser.add_argument("--app-password", help="Bluesky App Password override.")
+    dispatch_parser.add_argument("--service", help="Bluesky login host or entryway override.")
+    dispatch_parser.add_argument("--pds-host", help="Optional direct Bluesky PDS host override.")
     dispatch_parser.add_argument("--api-key", help="dev.to API key or Hashnode PAT, depending on platform.")
     dispatch_parser.add_argument("--publication-id", help="Hashnode publication ID.")
 
@@ -779,6 +940,14 @@ def main() -> None:
             if not args.angle:
                 raise SystemExit("--angle is required for threads.")
             rendered = publish_threads_dispatch(campaign, args)
+            print(rendered)
+            maybe_write_output(args.output, rendered)
+            return
+
+        if platform == "bluesky":
+            if not args.angle:
+                raise SystemExit("--angle is required for bluesky.")
+            rendered = publish_bluesky_dispatch(campaign, args)
             print(rendered)
             maybe_write_output(args.output, rendered)
             return

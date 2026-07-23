@@ -12,6 +12,8 @@ This folder reduces the amount of work left after the one-time account and auth 
   Manual Quora answer draft.
 - `snippets/threads-posts.txt`
   Short post options for Threads once the Meta app flow is ready.
+- `snippets/bluesky-posts.txt`
+  Short post options for Bluesky when you want a compact social post with the same strategy.
 - `campaigns/japan-sim-guide.json`
   Central campaign brief that defines the soft-sell positioning, proof points, platform modes, and post angles.
 - `../scripts/publish_devto.py`
@@ -22,6 +24,8 @@ This folder reduces the amount of work left after the one-time account and auth 
   Threads OAuth helper for the one-time code exchange and later token refreshes.
 - `../scripts/publish_threads.py`
   Threads publish helper for text, link, image, or video posts.
+- `../scripts/publish_bluesky.py`
+  Bluesky publish helper for App Password-based posting with optional external link cards.
 - `../scripts/outreach_campaign.py`
   Central campaign runner that renders strategy-aligned posts per platform and dispatches the API-backed ones.
 - `../scripts/hashnode_publication_id.py`
@@ -32,14 +36,16 @@ This folder reduces the amount of work left after the one-time account and auth 
 1. Reissue the dev.to API key.
 2. Create the Hashnode publication and resolve its publication ID.
 3. Use the social preview image already added to the site so pasted links have a stronger preview.
-4. Finish the Meta app setup once, exchange the code for a long-lived Threads token, and keep that token in your shell or scheduler.
-5. Publish drafts first, then flip to live once the preview and canonical settings look correct.
+4. Create a Bluesky App Password once and keep it in your shell or scheduler.
+5. Finish the Meta app setup once, exchange the code for a long-lived Threads token, and keep that token in your shell or scheduler.
+6. Publish drafts first, then flip to live once the preview and canonical settings look correct.
 
 ## Strategy-driven runner
 
 The campaign runner sits above the individual platform scripts.
 
 - One JSON brief defines the positioning, disclosure language, proof points, source-tagged URLs, and reusable post angles.
+- `bluesky` can auto-post as soon as you have a handle and App Password.
 - The same JSON can also define a playbook, so the recommended launch order lives next to the messaging itself.
 - `threads` can be auto-posted immediately once the long-lived token is ready.
 - `reddit` and `quora` stay export-first: the runner prepares the full draft so the only manual step left is pasting it into the platform.
@@ -52,12 +58,14 @@ Use a source tag in the shared URL so the site can show the matching entry path:
 - Reddit: `https://tetsu363636.github.io/japan-sim-guide/?src=reddit`
 - Quora: `https://tetsu363636.github.io/japan-sim-guide/?src=quora`
 - Threads: `https://tetsu363636.github.io/japan-sim-guide/?src=threads`
+- Bluesky: `https://tetsu363636.github.io/japan-sim-guide/?src=bluesky`
 - dev.to / Hashnode article links: `https://tetsu363636.github.io/japan-sim-guide/?src=article`
 
 The same rule also works for language-specific pages, for example:
 
 - Spanish from Reddit: `https://tetsu363636.github.io/japan-sim-guide/es/?src=reddit`
 - Thai from Threads: `https://tetsu363636.github.io/japan-sim-guide/th/?src=threads`
+- English from Bluesky: `https://tetsu363636.github.io/japan-sim-guide/?src=bluesky`
 
 ## Commands
 
@@ -145,13 +153,42 @@ List the saved Threads snippet options:
 python3 scripts/publish_threads.py --list-options
 ```
 
+List the saved Bluesky snippet options:
+
+```bash
+python3 scripts/publish_bluesky.py --list-options
+```
+
+Preview a direct Bluesky post with an external link card:
+
+```bash
+python3 scripts/publish_bluesky.py \
+  --option 2 \
+  --external-url https://tetsu363636.github.io/japan-sim-guide/?src=bluesky \
+  --external-title "Japan SIM Guide" \
+  --external-description "Honest Rakuten vs docomo / au / SoftBank comparison, newcomer signup checklist, and monthly cost calculator in 11 languages." \
+  --dry-run
+```
+
+Publish directly on Bluesky with an App Password:
+
+```bash
+BLUESKY_HANDLE=your.handle.bsky.social \
+BLUESKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx \
+python3 scripts/publish_bluesky.py \
+  --option 2 \
+  --external-url https://tetsu363636.github.io/japan-sim-guide/?src=bluesky \
+  --external-title "Japan SIM Guide" \
+  --external-description "Honest Rakuten vs docomo / au / SoftBank comparison, newcomer signup checklist, and monthly cost calculator in 11 languages."
+```
+
 List the campaign angles, platforms, and supported landing languages:
 
 ```bash
 python3 scripts/outreach_campaign.py list
 ```
 
-Validate every Threads variant and the playbook references in one shot:
+Validate every Threads and Bluesky variant plus the playbook references in one shot:
 
 ```bash
 python3 scripts/outreach_campaign.py validate
@@ -163,6 +200,15 @@ Render one strategy-based Threads post:
 python3 scripts/outreach_campaign.py render \
   --platform threads \
   --angle arrival-friction \
+  --landing-language en
+```
+
+Render one strategy-based Bluesky post:
+
+```bash
+python3 scripts/outreach_campaign.py render \
+  --platform bluesky \
+  --angle honest-comparison \
   --landing-language en
 ```
 
@@ -214,6 +260,28 @@ Publish a strategy-based Threads post:
 THREADS_ACCESS_TOKEN=your_long_lived_token \
 python3 scripts/outreach_campaign.py dispatch \
   --platform threads \
+  --angle honest-comparison \
+  --landing-language en
+```
+
+Preview a strategy-based Bluesky post request without publishing:
+
+```bash
+BLUESKY_HANDLE=your.handle.bsky.social \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform bluesky \
+  --angle arrival-friction \
+  --landing-language en \
+  --dry-run
+```
+
+Publish a strategy-based Bluesky post:
+
+```bash
+BLUESKY_HANDLE=your.handle.bsky.social \
+BLUESKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform bluesky \
   --angle honest-comparison \
   --landing-language en
 ```
@@ -279,6 +347,17 @@ python3 scripts/outreach_campaign.py dispatch \
 - Quora
   Use `outreach_campaign.py dispatch --platform quora` to generate the answer draft and then add it to an existing question or a self-asked Q/A.
 
+## Bluesky notes
+
+- Bluesky automation only needs a handle plus an App Password.
+  Create the App Password in your Bluesky settings and keep using that instead of your main account password.
+- The campaign runner attaches the `?src=bluesky` landing URL as an external card automatically.
+  That keeps the source-aware entry path active without spending post characters on a raw URL.
+- `publish_bluesky.py` can also add rich-text link facets if your text includes raw URLs.
+  Leave that on unless you have a reason to post plain text only.
+- If the strategic angle changes, update `campaigns/japan-sim-guide.json` first.
+  The runner will reuse that same brief across Bluesky, Threads, Reddit, Quora, dev.to, and Hashnode.
+
 ## Threads notes
 
 - The first Meta approval step is still manual.
@@ -286,7 +365,7 @@ python3 scripts/outreach_campaign.py dispatch \
 - Use the `?src=threads` landing URL somewhere in the post text or as `--link-attachment`.
   That keeps the tailored entry card active on the site.
 - If the strategic angle changes, update `campaigns/japan-sim-guide.json` first.
-  The runner will reuse that same brief across Threads, Reddit, Quora, dev.to, and Hashnode.
+  The runner will reuse that same brief across Threads, Bluesky, Reddit, Quora, dev.to, and Hashnode.
 - If the execution order changes, update the `playbooks` section in the same JSON.
   That keeps the posting sequence and the messaging source in one place.
 - `publish_threads.py` defaults to the saved `threads-posts.txt` file, but you can also post from `--text`, `--text-file`, `--image-url`, or `--video-url`.

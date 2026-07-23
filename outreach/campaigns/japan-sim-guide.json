@@ -16,6 +16,12 @@
     "one_liner": "A multilingual, newcomer-focused Japan SIM guide that answers the questions foreigners actually get stuck on.",
     "soft_sell": "The site is built to be useful first, compare honestly against docomo / au / SoftBank, and only point to the official Rakuten link if Rakuten still looks like the best fit."
   },
+  "link_cards": {
+    "bluesky": {
+      "title": "Japan SIM Guide",
+      "description": "Honest Rakuten vs docomo / au / SoftBank comparison, newcomer signup checklist, and monthly cost calculator in 11 languages."
+    }
+  },
   "proof_points": [
     "honest price comparison vs docomo / au / SoftBank",
     "foreigner signup checklist covering residence card and payment friction",
@@ -45,6 +51,11 @@
       "mode": "api",
       "source_tag": "threads",
       "max_length": 500
+    },
+    "bluesky": {
+      "mode": "api",
+      "source_tag": "bluesky",
+      "max_length": 300
     },
     "reddit": {
       "mode": "manual-export",
@@ -92,6 +103,13 @@
           "landing_language": "en",
           "action": "api-draft",
           "note": "Second article distribution channel once the publication ID is ready."
+        },
+        {
+          "platform": "bluesky",
+          "angle": "honest-comparison",
+          "landing_language": "en",
+          "action": "api-post",
+          "note": "Fastest API-backed social launch because Bluesky only needs a handle plus App Password."
         },
         {
           "platform": "threads",
