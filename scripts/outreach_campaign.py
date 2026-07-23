@@ -77,6 +77,10 @@ def angle_summary(campaign: dict[str, Any], angle_id: str) -> dict[str, Any]:
     return require_key(campaign["angles"], angle_id, "angle")
 
 
+def playbook_definition(campaign: dict[str, Any], playbook_name: str) -> dict[str, Any]:
+    return require_key(campaign.get("playbooks", {}), playbook_name, "playbook")
+
+
 def threads_text(campaign: dict[str, Any], angle_id: str, landing_language: str) -> str:
     angle = angle_summary(campaign, angle_id)
     max_length = require_key(campaign["platforms"], "threads", "platform").get("max_length", 500)
@@ -250,6 +254,52 @@ def filename_for(platform: str, angle_id: str, landing_language: str) -> str:
     return f"{platform}-{landing_language}-{angle_id}.{extension}"
 
 
+def planned_filename(task: dict[str, Any]) -> str:
+    platform = task["platform"]
+    landing_language = task.get("landing_language", "en")
+    angle_id = task.get("angle")
+    if platform in {"reddit", "quora", "threads"} and angle_id:
+        return filename_for(platform, angle_id, landing_language)
+    if platform == "devto":
+        return f"devto-{landing_language}-draft.json"
+    if platform == "hashnode":
+        return f"hashnode-{landing_language}-draft.json"
+    return f"{platform}-{landing_language}.json"
+
+
+def task_command(task: dict[str, Any], output_dir: str | None = None) -> str:
+    platform = task["platform"]
+    landing_language = task.get("landing_language", "en")
+    angle_id = task.get("angle")
+    target_arg = f" --output-dir {output_dir}" if output_dir and platform in {"reddit", "quora"} else ""
+    output_arg = ""
+    if output_dir and platform in {"threads", "devto", "hashnode"}:
+        output_arg = f" --output {Path(output_dir) / planned_filename(task)}"
+
+    if platform in {"reddit", "quora"}:
+        return (
+            f"python3 scripts/outreach_campaign.py dispatch --platform {platform} "
+            f"--angle {angle_id} --landing-language {landing_language}{target_arg}"
+        )
+    if platform == "threads":
+        return (
+            "THREADS_ACCESS_TOKEN=... "
+            f"python3 scripts/outreach_campaign.py dispatch --platform threads "
+            f"--angle {angle_id} --landing-language {landing_language}{output_arg}"
+        )
+    if platform == "devto":
+        return (
+            "DEVTO_API_KEY=... "
+            f"python3 scripts/outreach_campaign.py dispatch --platform devto{output_arg}"
+        )
+    if platform == "hashnode":
+        return (
+            "HASHNODE_PAT=... HASHNODE_PUBLICATION_ID=... "
+            f"python3 scripts/outreach_campaign.py dispatch --platform hashnode{output_arg}"
+        )
+    return f"# Unsupported platform: {platform}"
+
+
 def list_summary(campaign: dict[str, Any]) -> str:
     lines = ["Platforms:"]
     for platform, settings in campaign["platforms"].items():
@@ -262,6 +312,49 @@ def list_summary(campaign: dict[str, Any]) -> str:
     lines.append("Landing languages:")
     lines.append("- " + ", ".join(campaign["landing_languages"].keys()))
     return "\n".join(lines)
+
+
+def validate_campaign(campaign: dict[str, Any]) -> dict[str, Any]:
+    results: dict[str, Any] = {
+        "campaign": campaign["id"],
+        "threads_checks": [],
+        "playbook_checks": [],
+        "status": "ok",
+    }
+
+    for angle_id in campaign["angles"].keys():
+        for landing_language in campaign["landing_languages"].keys():
+            text = threads_text(campaign, angle_id, landing_language)
+            results["threads_checks"].append(
+                {
+                    "angle": angle_id,
+                    "landing_language": landing_language,
+                    "length": len(text),
+                    "status": "ok",
+                }
+            )
+
+    for playbook_name, definition in campaign.get("playbooks", {}).items():
+        for idx, task in enumerate(definition.get("tasks", []), start=1):
+            platform = require_key(campaign["platforms"], task["platform"], "platform")
+            landing_language = normalize_language(campaign, task.get("landing_language", "en"))
+            if task["platform"] in {"threads", "reddit", "quora"}:
+                angle_id = task.get("angle")
+                if not angle_id:
+                    raise SystemExit(f"Playbook {playbook_name} task {idx} is missing an angle.")
+                angle_summary(campaign, angle_id)
+            results["playbook_checks"].append(
+                {
+                    "playbook": playbook_name,
+                    "task": idx,
+                    "platform": task["platform"],
+                    "mode": platform["mode"],
+                    "landing_language": landing_language,
+                    "status": "ok",
+                }
+            )
+
+    return results
 
 
 def export_bundle(
@@ -301,6 +394,104 @@ def export_bundle(
         )
 
     manifest_path = output_dir / "manifest.json"
+    manifest_path.write_text(dump_json(manifest) + "\n", encoding="utf-8")
+    manifest["manifest_path"] = str(manifest_path)
+    return manifest
+
+
+def render_playbook_markdown(campaign: dict[str, Any], playbook_name: str, *, output_dir: str | None = None) -> str:
+    definition = playbook_definition(campaign, playbook_name)
+    lines = [f"# Playbook: {playbook_name}", "", definition["summary"], ""]
+
+    for idx, task in enumerate(definition.get("tasks", []), start=1):
+        platform = task["platform"]
+        landing_language = task.get("landing_language", "en")
+        angle_id = task.get("angle")
+        lines.append(f"## {idx}. {platform}")
+        lines.append("")
+        lines.append(f"- Action: {task['action']}")
+        lines.append(f"- Landing language: {landing_language}")
+        if angle_id:
+            lines.append(f"- Angle: {angle_id}")
+        lines.append(f"- Note: {task['note']}")
+        lines.append(f"- Command: `{task_command(task, output_dir)}`")
+        lines.append("")
+
+    return "\n".join(lines).strip() + "\n"
+
+
+def prepare_playbook_assets(campaign: dict[str, Any], playbook_name: str, output_dir: Path) -> dict[str, Any]:
+    definition = playbook_definition(campaign, playbook_name)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    manifest: dict[str, Any] = {
+        "campaign": campaign["id"],
+        "playbook": playbook_name,
+        "summary": definition["summary"],
+        "tasks": [],
+    }
+
+    queue_path = output_dir / "PLAYBOOK.md"
+    queue_path.write_text(render_playbook_markdown(campaign, playbook_name, output_dir=str(output_dir)), encoding="utf-8")
+    manifest["playbook_path"] = str(queue_path)
+
+    for idx, task in enumerate(definition.get("tasks", []), start=1):
+        platform = task["platform"]
+        landing_language = task.get("landing_language", "en")
+        angle_id = task.get("angle")
+        output_path = output_dir / planned_filename(task)
+        metadata: dict[str, Any] = {
+            "task": idx,
+            "platform": platform,
+            "action": task["action"],
+            "landing_language": landing_language,
+            "note": task["note"],
+            "command": task_command(task, str(output_dir)),
+            "path": str(output_path),
+        }
+        if angle_id:
+            metadata["angle"] = angle_id
+
+        if platform in {"reddit", "quora"}:
+            content = render_content(campaign, platform, angle_id, landing_language)
+            output_path.write_text(content + "\n", encoding="utf-8")
+        elif platform == "threads":
+            content = publish_threads_dispatch(
+                campaign,
+                SimpleNamespace(
+                    angle=angle_id,
+                    landing_language=landing_language,
+                    dry_run=True,
+                    access_token=None,
+                ),
+            )
+            output_path.write_text(content + "\n", encoding="utf-8")
+        elif platform == "devto":
+            content = publish_devto_dispatch(
+                campaign,
+                SimpleNamespace(
+                    api_key=None,
+                    publish=False,
+                    dry_run=True,
+                ),
+            )
+            output_path.write_text(content + "\n", encoding="utf-8")
+        elif platform == "hashnode":
+            content = publish_hashnode_dispatch(
+                campaign,
+                SimpleNamespace(
+                    api_key=None,
+                    publication_id="your_publication_id",
+                    publish=False,
+                    dry_run=True,
+                ),
+            )
+            output_path.write_text(content + "\n", encoding="utf-8")
+        else:
+            raise SystemExit(f"Unsupported playbook platform: {platform}")
+
+        manifest["tasks"].append(metadata)
+
+    manifest_path = output_dir / "playbook-manifest.json"
     manifest_path.write_text(dump_json(manifest) + "\n", encoding="utf-8")
     manifest["manifest_path"] = str(manifest_path)
     return manifest
@@ -461,6 +652,9 @@ def parse_args() -> argparse.Namespace:
     list_parser = subparsers.add_parser("list", help="Show platforms, angles, and landing languages.")
     list_parser.add_argument("--output", help="Optional file path for the rendered output.")
 
+    validate_parser = subparsers.add_parser("validate", help="Validate all Threads variants and playbook references.")
+    validate_parser.add_argument("--output", help="Optional file path for the rendered JSON.")
+
     render_parser = subparsers.add_parser("render", help="Render one platform-specific asset.")
     render_parser.add_argument("--platform", required=True, choices=["threads", "reddit", "quora"])
     render_parser.add_argument("--angle", required=True)
@@ -473,6 +667,11 @@ def parse_args() -> argparse.Namespace:
     bundle_parser.add_argument("--angles", default="all", help="Comma-separated angles or 'all'.")
     bundle_parser.add_argument("--output-dir", required=True, help="Directory for rendered assets.")
     bundle_parser.add_argument("--output", help="Optional file path for the manifest JSON.")
+
+    playbook_parser = subparsers.add_parser("playbook", help="Show or materialize a recommended execution playbook.")
+    playbook_parser.add_argument("--name", default="launch", help="Playbook name from the campaign JSON.")
+    playbook_parser.add_argument("--output-dir", help="If set, write task assets and a queue file into this directory.")
+    playbook_parser.add_argument("--output", help="Optional file path for the rendered output or manifest JSON.")
 
     dispatch_parser = subparsers.add_parser("dispatch", help="Publish to an API-backed platform or export a manual draft.")
     dispatch_parser.add_argument("--platform", required=True, choices=["threads", "reddit", "quora", "devto", "hashnode"])
@@ -495,6 +694,12 @@ def main() -> None:
 
     if args.command == "list":
         rendered = list_summary(campaign)
+        print(rendered)
+        maybe_write_output(args.output, rendered)
+        return
+
+    if args.command == "validate":
+        rendered = dump_json(validate_campaign(campaign))
         print(rendered)
         maybe_write_output(args.output, rendered)
         return
@@ -526,6 +731,18 @@ def main() -> None:
             angles=angles,
         )
         rendered = dump_json(manifest)
+        print(rendered)
+        maybe_write_output(args.output, rendered)
+        return
+
+    if args.command == "playbook":
+        if args.output_dir:
+            manifest = prepare_playbook_assets(campaign, args.name, Path(args.output_dir))
+            rendered = dump_json(manifest)
+            print(rendered)
+            maybe_write_output(args.output, rendered)
+            return
+        rendered = render_playbook_markdown(campaign, args.name)
         print(rendered)
         maybe_write_output(args.output, rendered)
         return

@@ -40,6 +40,7 @@ This folder reduces the amount of work left after the one-time account and auth 
 The campaign runner sits above the individual platform scripts.
 
 - One JSON brief defines the positioning, disclosure language, proof points, source-tagged URLs, and reusable post angles.
+- The same JSON can also define a playbook, so the recommended launch order lives next to the messaging itself.
 - `threads` can be auto-posted immediately once the long-lived token is ready.
 - `reddit` and `quora` stay export-first: the runner prepares the full draft so the only manual step left is pasting it into the platform.
 - `dev.to` and `hashnode` reuse the canonical article draft that already points back to the main site.
@@ -150,6 +151,12 @@ List the campaign angles, platforms, and supported landing languages:
 python3 scripts/outreach_campaign.py list
 ```
 
+Validate every Threads variant and the playbook references in one shot:
+
+```bash
+python3 scripts/outreach_campaign.py validate
+```
+
 Render one strategy-based Threads post:
 
 ```bash
@@ -165,6 +172,20 @@ Render a full outreach bundle for review:
 python3 scripts/outreach_campaign.py bundle \
   --landing-language en \
   --output-dir /tmp/jsg-outreach
+```
+
+Show the recommended launch sequence:
+
+```bash
+python3 scripts/outreach_campaign.py playbook --name launch
+```
+
+Materialize the launch playbook into a ready-to-use folder:
+
+```bash
+python3 scripts/outreach_campaign.py playbook \
+  --name launch \
+  --output-dir /tmp/jsg-launch-playbook
 ```
 
 Export a Reddit draft that matches the strategy but still leaves the final posting click to you:
@@ -266,6 +287,8 @@ python3 scripts/outreach_campaign.py dispatch \
   That keeps the tailored entry card active on the site.
 - If the strategic angle changes, update `campaigns/japan-sim-guide.json` first.
   The runner will reuse that same brief across Threads, Reddit, Quora, dev.to, and Hashnode.
+- If the execution order changes, update the `playbooks` section in the same JSON.
+  That keeps the posting sequence and the messaging source in one place.
 - `publish_threads.py` defaults to the saved `threads-posts.txt` file, but you can also post from `--text`, `--text-file`, `--image-url`, or `--video-url`.
 - If you later find that your app only accepts versioned endpoints, override the base with `THREADS_PUBLISH_BASE=https://graph.threads.net/v1.0`.
 

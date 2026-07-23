@@ -63,6 +63,53 @@
       "source_tag": "article"
     }
   },
+  "playbooks": {
+    "launch": {
+      "summary": "Initial outreach sequence focused on earning the first trust-bearing backlinks and then reusing the same core story across article and Threads distribution.",
+      "tasks": [
+        {
+          "platform": "reddit",
+          "angle": "arrival-friction",
+          "landing_language": "en",
+          "action": "manual-post",
+          "note": "Best first manual post for r/movingtojapan because it leads with usefulness instead of price."
+        },
+        {
+          "platform": "quora",
+          "angle": "arrival-friction",
+          "landing_language": "en",
+          "action": "manual-answer",
+          "note": "Seed an exact-match answer for the core newcomer SIM question."
+        },
+        {
+          "platform": "devto",
+          "landing_language": "en",
+          "action": "api-draft",
+          "note": "Canonical-first article draft for an early backlink and indexable distribution page."
+        },
+        {
+          "platform": "hashnode",
+          "landing_language": "en",
+          "action": "api-draft",
+          "note": "Second article distribution channel once the publication ID is ready."
+        },
+        {
+          "platform": "threads",
+          "angle": "honest-comparison",
+          "landing_language": "en",
+          "action": "api-post",
+          "note": "Use after tonight's Meta token setup to test the explicit-disclosure angle."
+        },
+        {
+          "platform": "threads",
+          "angle": "multilingual-helper",
+          "landing_language": "es",
+          "action": "api-post",
+          "note": "Optional follow-up if you want one non-English distribution test after the English post."
+        }
+      ]
+    }
+  },
   "angles": {
     "arrival-friction": {
       "label": "Week-one friction",
