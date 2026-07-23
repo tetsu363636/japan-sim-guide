@@ -12,6 +12,8 @@ This folder reduces the amount of work left after the one-time account and auth 
   Manual Quora answer draft.
 - `snippets/threads-posts.txt`
   Short post options for Threads once the Meta app flow is ready.
+- `campaigns/japan-sim-guide.json`
+  Central campaign brief that defines the soft-sell positioning, proof points, platform modes, and post angles.
 - `../scripts/publish_devto.py`
   dev.to draft/publish helper.
 - `../scripts/publish_hashnode.py`
@@ -20,6 +22,8 @@ This folder reduces the amount of work left after the one-time account and auth 
   Threads OAuth helper for the one-time code exchange and later token refreshes.
 - `../scripts/publish_threads.py`
   Threads publish helper for text, link, image, or video posts.
+- `../scripts/outreach_campaign.py`
+  Central campaign runner that renders strategy-aligned posts per platform and dispatches the API-backed ones.
 - `../scripts/hashnode_publication_id.py`
   Helper to resolve a Hashnode publication ID from its host.
 
@@ -30,6 +34,15 @@ This folder reduces the amount of work left after the one-time account and auth 
 3. Use the social preview image already added to the site so pasted links have a stronger preview.
 4. Finish the Meta app setup once, exchange the code for a long-lived Threads token, and keep that token in your shell or scheduler.
 5. Publish drafts first, then flip to live once the preview and canonical settings look correct.
+
+## Strategy-driven runner
+
+The campaign runner sits above the individual platform scripts.
+
+- One JSON brief defines the positioning, disclosure language, proof points, source-tagged URLs, and reusable post angles.
+- `threads` can be auto-posted immediately once the long-lived token is ready.
+- `reddit` and `quora` stay export-first: the runner prepares the full draft so the only manual step left is pasting it into the platform.
+- `dev.to` and `hashnode` reuse the canonical article draft that already points back to the main site.
 
 ## Source-tagged landing URLs
 
@@ -131,30 +144,57 @@ List the saved Threads snippet options:
 python3 scripts/publish_threads.py --list-options
 ```
 
+List the campaign angles, platforms, and supported landing languages:
+
+```bash
+python3 scripts/outreach_campaign.py list
+```
+
+Render one strategy-based Threads post:
+
+```bash
+python3 scripts/outreach_campaign.py render \
+  --platform threads \
+  --angle arrival-friction \
+  --landing-language en
+```
+
+Render a full outreach bundle for review:
+
+```bash
+python3 scripts/outreach_campaign.py bundle \
+  --landing-language en \
+  --output-dir /tmp/jsg-outreach
+```
+
+Export a Reddit draft that matches the strategy but still leaves the final posting click to you:
+
+```bash
+python3 scripts/outreach_campaign.py dispatch \
+  --platform reddit \
+  --angle honest-comparison \
+  --landing-language en \
+  --output-dir /tmp/jsg-outreach
+```
+
 Preview a Threads post request without publishing:
 
 ```bash
 THREADS_ACCESS_TOKEN=your_long_lived_token \
-python3 scripts/publish_threads.py \
-  --option 2 \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform threads \
+  --angle arrival-friction \
   --dry-run
 ```
 
-Publish one of the saved Threads snippets:
+Publish a strategy-based Threads post:
 
 ```bash
 THREADS_ACCESS_TOKEN=your_long_lived_token \
-python3 scripts/publish_threads.py \
-  --option 2
-```
-
-Publish custom text with the source-tagged landing URL attached explicitly:
-
-```bash
-THREADS_ACCESS_TOKEN=your_long_lived_token \
-python3 scripts/publish_threads.py \
-  --text "I turned the Japan SIM answer I kept repeating into a public guide for newcomers." \
-  --link-attachment https://tetsu363636.github.io/japan-sim-guide/?src=threads
+python3 scripts/outreach_campaign.py dispatch \
+  --platform threads \
+  --angle honest-comparison \
+  --landing-language en
 ```
 
 Refresh the long-lived token on a schedule:
@@ -168,17 +208,55 @@ Once the token is in place, the publish command is cron-friendly. Example:
 
 ```bash
 THREADS_ACCESS_TOKEN=your_long_lived_token \
-python3 /home/testuhirokankeko/japan-sim-guide/scripts/publish_threads.py \
-  --option 1 \
+python3 /home/testuhirokankeko/japan-sim-guide/scripts/outreach_campaign.py dispatch \
+  --platform threads \
+  --angle multilingual-helper \
+  --landing-language en \
   --output /tmp/threads-last-post.json
+```
+
+Create a dev.to draft from the canonical article through the same runner:
+
+```bash
+DEVTO_API_KEY=your_key_here \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform devto
+```
+
+Publish directly on dev.to:
+
+```bash
+DEVTO_API_KEY=your_key_here \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform devto \
+  --publish
+```
+
+Create a Hashnode draft through the same runner:
+
+```bash
+HASHNODE_PAT=your_pat_here \
+HASHNODE_PUBLICATION_ID=your_publication_id \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform hashnode
+```
+
+Publish directly on Hashnode:
+
+```bash
+HASHNODE_PAT=your_pat_here \
+HASHNODE_PUBLICATION_ID=your_publication_id \
+python3 scripts/outreach_campaign.py dispatch \
+  --platform hashnode \
+  --publish
 ```
 
 ## Manual-only platforms
 
 - Reddit
-  Use the snippet as a base, keep the disclosure up top, and post manually from your own account.
+  Use `outreach_campaign.py dispatch --platform reddit` to generate the full draft, keep the disclosure up top, and post manually from your own account.
 - Quora
-  Use the answer draft and add it to an existing question or a self-asked Q/A once you decide the wording.
+  Use `outreach_campaign.py dispatch --platform quora` to generate the answer draft and then add it to an existing question or a self-asked Q/A.
 
 ## Threads notes
 
@@ -186,6 +264,8 @@ python3 /home/testuhirokankeko/japan-sim-guide/scripts/publish_threads.py \
   Open the URL from `threads_auth.py auth-url`, approve the app in a browser, and paste the returned `code` back into the CLI.
 - Use the `?src=threads` landing URL somewhere in the post text or as `--link-attachment`.
   That keeps the tailored entry card active on the site.
+- If the strategic angle changes, update `campaigns/japan-sim-guide.json` first.
+  The runner will reuse that same brief across Threads, Reddit, Quora, dev.to, and Hashnode.
 - `publish_threads.py` defaults to the saved `threads-posts.txt` file, but you can also post from `--text`, `--text-file`, `--image-url`, or `--video-url`.
 - If you later find that your app only accepts versioned endpoints, override the base with `THREADS_PUBLISH_BASE=https://graph.threads.net/v1.0`.
 

@@ -1,0 +1,107 @@
+{
+  "id": "japan-sim-guide",
+  "name": "Japan SIM Guide",
+  "site_name": "JapanSIMGuide",
+  "article_file": "outreach/articles/japan-sim-guide-en.md",
+  "base_url": "https://tetsu363636.github.io/japan-sim-guide/",
+  "methodology_path": "methodology/",
+  "referral_url": "https://r10.to/hk9ER4?openExternalBrowser=1",
+  "default_copy_language": "en",
+  "disclosure": {
+    "short": "Disclosure: I work at Rakuten, and the guide includes an official employee referral link.",
+    "medium": "Disclosure first: I work at Rakuten, and the guide includes an official employee referral link. I call that out clearly on the page because I do not want to hide the incentive.",
+    "long": "Disclosure: I work at Rakuten and the guide contains an official employee referral link, so treat that as a visible conflict when judging the recommendation."
+  },
+  "positioning": {
+    "one_liner": "A multilingual, newcomer-focused Japan SIM guide that answers the questions foreigners actually get stuck on.",
+    "soft_sell": "The site is built to be useful first, compare honestly against docomo / au / SoftBank, and only point to the official Rakuten link if Rakuten still looks like the best fit."
+  },
+  "proof_points": [
+    "honest price comparison vs docomo / au / SoftBank",
+    "foreigner signup checklist covering residence card and payment friction",
+    "cost calculator for realistic monthly spend",
+    "11 language versions for newcomers and helpers",
+    "methodology page that makes the referral incentive visible"
+  ],
+  "manual_targets": {
+    "reddit_subreddit": "r/movingtojapan",
+    "quora_question_seed": "What is the best SIM card for foreigners moving to Japan in 2026?"
+  },
+  "landing_languages": {
+    "en": "",
+    "ko": "ko/",
+    "zh": "zh/",
+    "zh-TW": "zh-TW/",
+    "vi": "vi/",
+    "tl": "tl/",
+    "es": "es/",
+    "id": "id/",
+    "ne": "ne/",
+    "pt": "pt/",
+    "th": "th/"
+  },
+  "platforms": {
+    "threads": {
+      "mode": "api",
+      "source_tag": "threads",
+      "max_length": 500
+    },
+    "reddit": {
+      "mode": "manual-export",
+      "source_tag": "reddit"
+    },
+    "quora": {
+      "mode": "manual-export",
+      "source_tag": "quora"
+    },
+    "devto": {
+      "mode": "api",
+      "source_tag": "article"
+    },
+    "hashnode": {
+      "mode": "api",
+      "source_tag": "article"
+    }
+  },
+  "angles": {
+    "arrival-friction": {
+      "label": "Week-one friction",
+      "hook": "Most Japan SIM advice is written for people who are already settled. Week one is the hard part.",
+      "problem": "New arrivals often do not have a Japanese credit card yet, may need eSIM immediately, and still need a realistic English-friendly signup flow.",
+      "why_now": "This angle works well when the post should feel helpful instead of promotional.",
+      "bullets": [
+        "no Japanese credit card yet",
+        "eSIM on arrival",
+        "English signup flow",
+        "what documents actually matter"
+      ],
+      "cta": "I turned that repeat answer into a public guide so people can compare first and decide faster."
+    },
+    "honest-comparison": {
+      "label": "Honest Big 3 comparison",
+      "hook": "The usual Japan mobile discussion jumps from promo price to promo price and hides the real tradeoffs for foreigners.",
+      "problem": "People need to know the actual cost gap versus docomo / au / SoftBank and when Rakuten is not the right answer.",
+      "why_now": "This angle is useful for communities that are skeptical of referral links or sponsored-sounding posts.",
+      "bullets": [
+        "real monthly cost gap vs the Big 3",
+        "who should not pick Rakuten",
+        "methodology and disclosure page",
+        "calculator for realistic usage tiers"
+      ],
+      "cta": "The guide stays explicit about the incentive and still points out where Rakuten loses."
+    },
+    "multilingual-helper": {
+      "label": "Multilingual helper resource",
+      "hook": "A lot of SIM advice in Japan breaks down the moment the person helping is translating between languages.",
+      "problem": "Friends, partners, and school staff often end up helping a newcomer choose a carrier, but the useful information is scattered and mostly Japanese or English only.",
+      "why_now": "This angle works when the audience includes helpers, community admins, or people sharing resources with family.",
+      "bullets": [
+        "11 language versions",
+        "same comparison and checklist across languages",
+        "useful for helpers sending a link to someone else",
+        "multilingual navigation with source-aware entry paths"
+      ],
+      "cta": "I wanted one link that a newcomer or helper could pass around without losing the practical details."
+    }
+  }
+}
