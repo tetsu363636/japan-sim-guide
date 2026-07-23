@@ -226,12 +226,27 @@ Show the recommended launch sequence:
 python3 scripts/outreach_campaign.py playbook --name launch
 ```
 
+Show the current social-only weekly plan for direct traffic:
+
+```bash
+python3 scripts/outreach_campaign.py playbook \
+  --name social-direct-week-2026-07-23
+```
+
 Materialize the launch playbook into a ready-to-use folder:
 
 ```bash
 python3 scripts/outreach_campaign.py playbook \
   --name launch \
   --output-dir /tmp/jsg-launch-playbook
+```
+
+Materialize the social-only weekly plan into a ready-to-use folder:
+
+```bash
+python3 scripts/outreach_campaign.py playbook \
+  --name social-direct-week-2026-07-23 \
+  --output-dir /tmp/jsg-social-week
 ```
 
 Export a Reddit draft that matches the strategy but still leaves the final posting click to you:
@@ -357,6 +372,12 @@ python3 scripts/outreach_campaign.py dispatch \
   Leave that on unless you have a reason to post plain text only.
 - If the strategic angle changes, update `campaigns/japan-sim-guide.json` first.
   The runner will reuse that same brief across Bluesky, Threads, Reddit, Quora, dev.to, and Hashnode.
+
+## Current social-only plan
+
+- Use the `social-direct-week-2026-07-23` playbook when the focus is direct traffic from Bluesky and Threads instead of backlinks.
+- That playbook already encodes the July 24-29, 2026 posting windows, platform split, English-first order, and the final Spanish multilingual test.
+- The prerequisites inside the playbook assume dev.to, Hashnode, Reddit, and Quora are out of scope for this week.
 
 ## Threads notes
 

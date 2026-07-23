@@ -434,6 +434,16 @@ def validate_campaign(campaign: dict[str, Any]) -> dict[str, Any]:
     return results
 
 
+def append_list_section(lines: list[str], title: str, items: list[str] | None) -> None:
+    if not items:
+        return
+    lines.append(f"## {title}")
+    lines.append("")
+    for item in items:
+        lines.append(f"- {item}")
+    lines.append("")
+
+
 def export_bundle(
     campaign: dict[str, Any],
     *,
@@ -480,6 +490,24 @@ def render_playbook_markdown(campaign: dict[str, Any], playbook_name: str, *, ou
     definition = playbook_definition(campaign, playbook_name)
     lines = [f"# Playbook: {playbook_name}", "", definition["summary"], ""]
 
+    goal = definition.get("goal")
+    if goal:
+        lines.extend(["## Goal", "", goal, ""])
+
+    append_list_section(lines, "Prerequisites", definition.get("prerequisites"))
+    append_list_section(lines, "Rules", definition.get("rules"))
+
+    review_window = definition.get("review_window")
+    review_prompt = definition.get("review_prompt")
+    if review_window or review_prompt:
+        lines.append("## Review")
+        lines.append("")
+        if review_window:
+            lines.append(f"- Window: {review_window}")
+        if review_prompt:
+            lines.append(f"- Prompt: {review_prompt}")
+        lines.append("")
+
     for idx, task in enumerate(definition.get("tasks", []), start=1):
         platform = task["platform"]
         landing_language = task.get("landing_language", "en")
@@ -487,6 +515,8 @@ def render_playbook_markdown(campaign: dict[str, Any], playbook_name: str, *, ou
         lines.append(f"## {idx}. {platform}")
         lines.append("")
         lines.append(f"- Action: {task['action']}")
+        if window := task.get("window"):
+            lines.append(f"- Window: {window}")
         lines.append(f"- Landing language: {landing_language}")
         if angle_id:
             lines.append(f"- Angle: {angle_id}")
@@ -506,6 +536,16 @@ def prepare_playbook_assets(campaign: dict[str, Any], playbook_name: str, output
         "summary": definition["summary"],
         "tasks": [],
     }
+    if goal := definition.get("goal"):
+        manifest["goal"] = goal
+    if prerequisites := definition.get("prerequisites"):
+        manifest["prerequisites"] = prerequisites
+    if rules := definition.get("rules"):
+        manifest["rules"] = rules
+    if review_window := definition.get("review_window"):
+        manifest["review_window"] = review_window
+    if review_prompt := definition.get("review_prompt"):
+        manifest["review_prompt"] = review_prompt
 
     queue_path = output_dir / "PLAYBOOK.md"
     queue_path.write_text(render_playbook_markdown(campaign, playbook_name, output_dir=str(output_dir)), encoding="utf-8")
@@ -527,6 +567,8 @@ def prepare_playbook_assets(campaign: dict[str, Any], playbook_name: str, output
         }
         if angle_id:
             metadata["angle"] = angle_id
+        if window := task.get("window"):
+            metadata["window"] = window
 
         if platform in {"reddit", "quora"}:
             content = render_content(campaign, platform, angle_id, landing_language)

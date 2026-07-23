@@ -126,6 +126,72 @@
           "note": "Optional follow-up if you want one non-English distribution test after the English post."
         }
       ]
+    },
+    "social-direct-week-2026-07-23": {
+      "summary": "Seven-day social-only plan for July 23, 2026 through July 29, 2026. The focus is direct traffic from Bluesky and Threads, not backlinks or article distribution.",
+      "goal": "Ship the first cross-platform comparison posts, test the week-one friction angle in English, add one Spanish multilingual post, and finish the week knowing which angle to scale next.",
+      "prerequisites": [
+        "Create one Bluesky App Password and keep BLUESKY_HANDLE plus BLUESKY_APP_PASSWORD ready in your shell.",
+        "Finish the Threads initial auth flow and keep THREADS_ACCESS_TOKEN ready before the first Threads slot."
+      ],
+      "rules": [
+        "Do not post the exact same copy on Bluesky and Threads on the same day.",
+        "Keep at least six hours between same-day posts.",
+        "Cap the week at two posts per day, and stay English-first until the final multilingual test.",
+        "Preserve the source-tagged landing URLs so the site keeps the tailored entry flow."
+      ],
+      "review_window": "2026-07-29 JST",
+      "review_prompt": "By July 29, 2026, compare which angle earned the most useful traffic and reactions. Keep the winner, then repeat it next week with one English follow-up plus one multilingual support post.",
+      "tasks": [
+        {
+          "platform": "bluesky",
+          "angle": "honest-comparison",
+          "landing_language": "en",
+          "action": "api-post",
+          "window": "2026-07-24 09:00 JST",
+          "note": "First live post. Lead with the explicit comparison framing while the account is fresh."
+        },
+        {
+          "platform": "threads",
+          "angle": "honest-comparison",
+          "landing_language": "en",
+          "action": "api-post",
+          "window": "2026-07-24 18:30 JST",
+          "note": "Use the same angle on Threads later in the day, but keep the copy platform-native."
+        },
+        {
+          "platform": "bluesky",
+          "angle": "arrival-friction",
+          "landing_language": "en",
+          "action": "api-post",
+          "window": "2026-07-25 11:00 JST",
+          "note": "Test the week-one newcomer pain points on the platform with the lighter auth burden."
+        },
+        {
+          "platform": "threads",
+          "angle": "arrival-friction",
+          "landing_language": "en",
+          "action": "api-post",
+          "window": "2026-07-26 18:30 JST",
+          "note": "Bring the same practical-friction angle to Threads once the first comparison post has had time to breathe."
+        },
+        {
+          "platform": "bluesky",
+          "angle": "multilingual-helper",
+          "landing_language": "es",
+          "action": "api-post",
+          "window": "2026-07-27 12:00 JST",
+          "note": "First multilingual test. Use Spanish to validate whether helper-focused copy travels better than pure price comparison."
+        },
+        {
+          "platform": "threads",
+          "angle": "multilingual-helper",
+          "landing_language": "es",
+          "action": "api-post",
+          "window": "2026-07-28 19:00 JST",
+          "note": "Mirror the Spanish helper angle on Threads one day later so the platforms do not cannibalize each other."
+        }
+      ]
     }
   },
   "angles": {
