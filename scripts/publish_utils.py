@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
-from urllib import error, request
+from urllib import error, parse, request
 
 
 class FrontMatterError(ValueError):
@@ -103,22 +103,72 @@ def maybe_write_output(path: str | None, content: str) -> None:
     output_path.write_text(content + "\n", encoding="utf-8")
 
 
+def serialize_query_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    return str(value)
+
+
+def build_url(url: str, query: dict[str, Any] | None = None) -> str:
+    if not query:
+        return url
+
+    encoded = []
+    for key, value in query.items():
+        if value is None:
+            continue
+        encoded.append((key, serialize_query_value(value)))
+    if not encoded:
+        return url
+    return f"{url}?{parse.urlencode(encoded)}"
+
+
+def request_api_json(
+    *,
+    url: str,
+    method: str = "GET",
+    headers: dict[str, str] | None = None,
+    query: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+    raw_body: bytes | None = None,
+) -> dict[str, Any]:
+    if payload is not None and raw_body is not None:
+        raise ValueError("Pass either payload or raw_body, not both.")
+
+    final_headers = dict(headers or {})
+    data = raw_body
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        final_headers.setdefault("Content-Type", "application/json")
+
+    req = request.Request(
+        url=build_url(url, query),
+        data=data,
+        headers=final_headers,
+        method=method,
+    )
+    try:
+        with request.urlopen(req) as response:
+            raw = response.read().decode("utf-8").strip()
+            if not raw:
+                return {}
+            return json.loads(raw)
+    except error.HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="replace")
+        raise SystemExit(f"HTTP {exc.code}: {details}") from exc
+
+
 def request_json(
     *,
     url: str,
     headers: dict[str, str],
     payload: dict[str, Any],
 ) -> dict[str, Any]:
-    req = request.Request(
+    return request_api_json(
         url=url,
-        data=json.dumps(payload).encode("utf-8"),
-        headers=headers,
         method="POST",
+        headers=headers,
+        payload=payload,
     )
-    try:
-        with request.urlopen(req) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except error.HTTPError as exc:
-        details = exc.read().decode("utf-8", errors="replace")
-        raise SystemExit(f"HTTP {exc.code}: {details}") from exc
-
